@@ -1,3 +1,3 @@
 def main() -> None:
-    print("'Hello, World!' ~ example-app")
+    print("'Hello, World!' ~ pyqstars")
     return None
