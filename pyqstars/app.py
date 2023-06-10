@@ -1,37 +1,59 @@
 import textwrap
 
-
-def solve(board: list[list[str]]) -> list[list[str]]:
-    return board
+from pyqstars.core.objects import Board, Piece
 
 
-def dumps(board: list[list[str]]) -> str:
-    lines: list[str] = []
-    for row in board:
-        line = []
-        for char in row:
-            line.append(char.upper())
-        lines.append(" ".join(line))
-    return "\n".join(lines)
+PIECES = [
+    Piece("b", "blue"),
+    Piece("g", "green"),
+    Piece("o", "orange"),
+    Piece("p", "pink"),
+    Piece("r", "red"),
+    Piece("v", "violet"),
+    Piece("y", "yellow")
+]
+
+
+def place(board: list[list[str]], piece: str) -> bool:
+    return True
+
+
+def solve(board: Board, pieces: list[Piece]) -> Board | None:
+    if not pieces:
+        return board
+    for piece in pieces:
+        if Board.place(piece):
+            Board.solve(board, pieces)
+    return None
+
+
+def get_unused_pieces(board: list[list[str]]) -> list[str]:
+    unused_pieces: list[str] = []
+    for piece in PIECES:
+        for rotattion in range(6):
+            rotated_piece: str = piece  # ... rotate somehow
+            if not any(rotated_piece in row for row in board):
+                unused_pieces.append(rotated_piece)
+    return unused_pieces
 
 
 def main() -> None:
-    board = textwrap.dedent("""\
+    board = Board.from_string(textwrap.dedent("""\
         v v v - - - -
          - - - - - -
         - - - - - - -
          - - - - - -\
-    """)
-    board = [row.split(" ") for row in board.split("\n")]
-    solution = solve(board)
+    """))
     print(
-        "",
-        "Attempting to solve:\n",
-        dumps(board),
-        "\n# ---------------------------------------------- #\n",
-        "Solution:\n",
-        dumps(solution),
-        "",
-        sep="\n"
+        f"\nAttempting to solve:\n\n"
+        f"{board!s}\n\n"
+        f"# ---------------------------------------------- #\n",
     )
+    if not Board.solve(PIECES.values()):
+        print("Board cannot be solved!\n")
+    else:
+        print(
+            f"Solution:\n\n"
+            f"{board!s}\n"
+        )
     return None
