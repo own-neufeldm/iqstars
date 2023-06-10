@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=65.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "${PROJECT_NAME}"
+version = "0.0.1"
+authors = [{ name = "Martin Neufeld" }]
+description = "${PROJECT_DESCRIPTION}"
+readme = "README.md"
+requires-python = "${PROJECT_REQUIRES_PYTHON}"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: ${PROJECT_CLASSIFIER_OPERATING_SYSTEM}",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/shyguys/${PROJECT_NAME}"
+"Bug Tracker" = "https://github.com/shyguys/${PROJECT_NAME}/issues"

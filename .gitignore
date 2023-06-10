@@ -1,0 +1,6 @@
+# ignore local python cache
+__pycache__
+
+# ignore local python package cache
+build
+*egg-info
