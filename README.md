@@ -1,6 +1,6 @@
-# ${PROJECT_NAME}
+# pyqstars
 
-${PROJECT_DESCRIPTION}
+This is a Python app to play IQ Stars.
 
 ## Installation
 
