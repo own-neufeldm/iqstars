@@ -1,4 +1,4 @@
-from pyqstars.core.piece import Piece
+from pyqstars.core.shape import Shape
 
 
 FIELD_EMPTY = " "
@@ -39,14 +39,14 @@ def place_tile_at(board: list[list[str]], tile: str, row: int, col: int) -> bool
     return True
 
 
-def place_piece_at(board: list[list[str]], piece: Piece, row: int, col: int) -> bool:
+def place_piece_at(board: list[list[str]], piece: Shape, row: int, col: int) -> bool:
     for tile_row, tile_col in piece.itertiles():
         if not place_tile_at(board, piece.id, tile_row+row, tile_col+col):
             return False
     return True
 
 
-def place_piece(board: list[list[str]], piece: Piece) -> bool:
+def place_piece(board: list[list[str]], piece: Shape) -> bool:
     for rotation in range(6):
         for row in range(len(board)):
             for col in range(len(board[row])):
@@ -55,7 +55,7 @@ def place_piece(board: list[list[str]], piece: Piece) -> bool:
     return False
 
 
-def solve(board: list[list[str]], pieces: list[Piece]) -> bool:
+def solve(board: list[list[str]], pieces: list[Shape]) -> bool:
     if not pieces:
         dump(board)
         return True

@@ -1,30 +1,36 @@
-from pyqstars.core.piece import Piece
+from typing import Iterable
+
+from pyqstars.core.shape import Tile, Shape
 
 
-PIECES = {
-    "blue": Piece("b", ((0, 0), (0, 1), (0, 2), (1, 1))),
-    "green": Piece("g", ((0, 0), (0, 1), (1, 1), (2, 2))),
-    "orange": Piece("o", ((0, 0), (0, 1), (1, 1))),
-    "pink": Piece("p", ((0, 0), (0, 1), (1, 1), (2, 1))),
-    "red": Piece("r", ((0, 0), (0, 1), (1, 0), (1, 1))),
-    "violet": Piece("v", ((0, 0), (0, 1), (0, 2))),
-    "yellow": Piece("y", ((0, 0), (0, 1), (0, 2), (1, 0)))
+SHAPES = {
+    "blue": Shape("b", (Tile(3, 3), Tile(4, 3), Tile(5, 3), Tile(4, 4)))
 }
 
 
-def inspect() -> None:
+def inspect(shapes: Iterable[Shape]) -> None:
+    if shapes is None:
+        shapes = SHAPES.values()
     separator = "\n\n# ---------------------------------------------- #\n\n"
     print(
         "\n",
-        separator.join(
-            f"{name}: {piece!r}\n\n{piece!s}"
-            for name, piece in PIECES.items()
-        ),
+        separator.join(f"{piece!r}\n\n{piece!s}" for piece in shapes),
         "\n",
         sep=""
     )
 
 
-def main() -> None:
-    inspect()
+def inspect_rotation(shape: Shape) -> None:
+    center = shape.tiles[0]
+    print(shape)
+    for _ in range(6):
+        print()
+        shape.rotate(center)
+        print(shape)
     return None
+
+
+def main() -> None:
+    shape = SHAPES["blue"]
+    inspect_rotation(shape)
+
