@@ -1,16 +1,14 @@
 from typing import Iterable
 
-from pyqstars.core.shape import Tile, Shape
-
+from pyqstars.core.shapes import Shape, Tile
 
 SHAPES = {
-    "blue": Shape("b", (Tile(3, 3), Tile(4, 3), Tile(5, 3), Tile(4, 4)))
+    "blue": Shape("b", (Tile(3, 3), Tile(4, 3), Tile(5, 3), Tile(5, 4))),
+    "violet": Shape("v", (Tile(3, 3), Tile(4, 3), Tile(5, 3)))
 }
 
 
 def inspect(shapes: Iterable[Shape]) -> None:
-    if shapes is None:
-        shapes = SHAPES.values()
     separator = "\n\n# ---------------------------------------------- #\n\n"
     print(
         "\n",
@@ -20,16 +18,6 @@ def inspect(shapes: Iterable[Shape]) -> None:
     )
 
 
-def inspect_rotation(shape: Shape) -> None:
-    center = shape.tiles[0]
-    print(shape)
-    for _ in range(6):
-        print()
-        shape.rotate(center)
-        print(shape)
-    return None
-
-
 def main() -> None:
-    shape = SHAPES["blue"]
-    inspect_rotation(shape)
+    center = Tile(3, 3)
+    inspect(SHAPES["blue"].rotated(center, 60*i) for i in range(6))

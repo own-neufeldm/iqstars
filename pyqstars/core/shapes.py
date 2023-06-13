@@ -1,24 +1,32 @@
 from dataclasses import dataclass
+from typing import Self
 
-from pyqstars.core.hex import Hex as Tile
+from pyqstars.core.hexagons import OddrOffsetCoordinate as Tile
 
 
 @dataclass(frozen=True)
 class Shape:
+    """Composite of tiles."""
     id: str
     tiles: tuple[Tile]
 
     def get_matrix(self) -> list[list[bool]]:
+        """TODO: docstring"""
         rows, cols = 7, 7
         matrix = [[False for _ in range(cols)] for _ in range(rows)]
         for hex in self.tiles:
             matrix[hex.row][hex.col] = True
         return matrix
 
-    def rotate(self, center: Tile) -> None:
-        for tile in self.tiles:
-            tile.rotate(center)
-        return None
+    def rotated(self, center: Tile, degree: int = 60) -> Self:
+        """Returns a clockwise-rotated copy of this object.
+
+        Args:
+            center: The center to rotate around.
+            degree: The degree of rotation. Must be a positive multiple of 60.
+        """
+        tiles = tuple(tile.rotated(center, degree) for tile in self.tiles)
+        return type(self)(self.id, tiles)
 
     def __str__(self) -> str:
         unoccupied, occupied = "-", "*"
