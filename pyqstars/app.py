@@ -33,4 +33,3 @@ def inspect_rotation(shape: Shape) -> None:
 def main() -> None:
     shape = SHAPES["blue"]
     inspect_rotation(shape)
-

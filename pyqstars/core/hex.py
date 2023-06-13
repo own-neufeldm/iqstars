@@ -1,3 +1,5 @@
+# https://www.redblobgames.com/grids/hexagons/
+
 from dataclasses import dataclass
 from typing import Self, Type
 
