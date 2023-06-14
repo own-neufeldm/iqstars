@@ -9,7 +9,18 @@ class Cube():
     """Cube coordinate for performing complex operations in a hexagonal grid."""
     q: int
     r: int
-    s: int
+    s: int = None
+
+    def __post_init__(self) -> None:
+        if self.s is None:
+            self.s = -self.q-self.r
+        return None
+
+    def __add__(self, other: Self) -> Self:
+        return type(self)(self.q + other.q, self.r + other.r)
+
+    def __sub__(self, other: Self) -> Self:
+        return type(self)(self.q - other.q, self.r - other.r)
 
     @classmethod
     def get_direction_vectors(cls) -> tuple[Self]:
@@ -22,23 +33,9 @@ class Cube():
     @classmethod
     def from_oddr(cls, offset: Type["OddRowedOffset"]) -> Self:
         """Constructs from an odd-rowed offset coordinate."""
-        q = offset.q - (offset.r - (abs(offset.r) % 2)) // 2
-        r = offset.r
-        return cls(q, r, -q-r)
-
-    def __add__(self, other: Self) -> Self:
-        return type(self)(
-            self.q + other.q,
-            self.r + other.r,
-            self.s + other.s
-        )
-
-    def __sub__(self, other: Self) -> Self:
-        return type(self)(
-            self.q - other.q,
-            self.r - other.r,
-            self.s - other.s
-        )
+        q = offset.col - (offset.row - (abs(offset.row) % 2)) // 2
+        r = offset.row
+        return cls(q, r)
 
     def moved(self, neighbor: int) -> Self:
         """"Returns a moved copy of this object.
@@ -63,14 +60,14 @@ class Cube():
         q, r, s = self.q, self.r, self.s
         for _ in range(degree // 60):
             q, r, s = -r, -s, -q
-        return type(self)(q, r, s)
+        return type(self)(q, r)
 
 
 @dataclass(order=True)
 class OddRowedOffset():
     """Coordinate in an odd-rowed offset system."""
-    q: int
-    r: int
+    col: int
+    row: int
 
     @classmethod
     def from_cube(cls, cube: Type["Cube"]) -> Self:
