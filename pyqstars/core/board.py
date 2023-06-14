@@ -50,7 +50,7 @@ def place_piece(board: list[list[str]], piece: Shape) -> bool:
     for rotation in range(6):
         for row in range(len(board)):
             for col in range(len(board[row])):
-                if place_piece_at(board, piece.rotated(rotation), row, col):
+                if place_piece_at(board, piece.get_rotation(rotation), row, col):
                     return True
     return False
 

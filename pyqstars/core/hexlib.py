@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Self, Type
 
 
-@dataclass(order=True)
+@dataclass(frozen=True, order=True)
 class Cube():
     """Cube coordinate for performing complex operations in a hexagonal grid."""
     q: int
@@ -13,7 +13,7 @@ class Cube():
 
     def __post_init__(self) -> None:
         if self.s is None:
-            self.s = -self.q-self.r
+            object.__setattr__(self, "s", -self.q-self.r)
         return None
 
     def __add__(self, other: Self) -> Self:
@@ -23,12 +23,16 @@ class Cube():
         return type(self)(self.q - other.q, self.r - other.r)
 
     @classmethod
-    def get_direction_vectors(cls) -> tuple[Self]:
+    def get_direction_vectors(cls) -> dict[str, Self]:
         """Precomputed permutations for neighbors."""
-        return (
-            cls(+1, 0, -1), cls(+1, -1, 0), cls(0, -1, +1),
-            cls(-1, 0, +1), cls(-1, +1, 0), cls(0, +1, -1),
-        )
+        return {
+            "e": cls(+1, 0, -1),
+            "ne": cls(+1, -1, 0),
+            "nw": cls(0, -1, +1),
+            "w": cls(-1, 0, +1),
+            "sw": cls(-1, +1, 0),
+            "se": cls(0, +1, -1)
+        }
 
     @classmethod
     def from_oddr(cls, offset: Type["OddRowedOffset"]) -> Self:
@@ -37,29 +41,32 @@ class Cube():
         r = offset.row
         return cls(q, r)
 
-    def moved(self, neighbor: int) -> Self:
-        """"Returns a moved copy of this object.
+    def get_neighbor(self, direction: str) -> Self:
+        """"Returns a neighbor.
 
         Args:
-            neighbor: The neighbor to move to, starting from 0 as right neighbor
-            and increasing counterclockwise to 5.
+            direction: Compass direction, one of [e, ne, nw, w, sw, se]
         """
-        return self + type(self).get_direction_vectors()[neighbor]
+        return self + type(self).get_direction_vectors()[direction]
 
-    def rotated(self, degree: int = 60) -> Self:
-        """Returns a clockwise-rotated copy of this object.
+    def get_rotation(self, degree: int = -60) -> Self:
+        """Returns a rotated copy of this object.
 
         Args:
-            degree: The degree of rotation. Must be a positive multiple of 60.
+            degree: The degree of rotation. Default is one rotation clockwise.
         """
-        if degree < 0 or degree % 60 != 0:
-            raise ValueError(
-                f"Degree of rotation must be a positive multiple of 60, "
-                f"is {degree}."
-            )
+        if degree % 60 != 0:
+            raise ValueError(f"degree ({degree}) must be a multiple of 60.")
+        if degree == 0:
+            return type(self)(self.q, self.r)
         q, r, s = self.q, self.r, self.s
-        for _ in range(degree // 60):
-            q, r, s = -r, -s, -q
+        times = degree // 60
+        if times < 0:
+            for _ in range(abs(times)):
+                q, r, s = -r, -s, -q
+        else:
+            for _ in range(times):
+                q, r, s = -s, -q, -r
         return type(self)(q, r)
 
 
@@ -76,25 +83,24 @@ class OddRowedOffset():
         row = cube.r
         return cls(col, row)
 
-    def moved(self, neighbor: int) -> Self:
-        """"Returns a moved copy of this object.
+    def get_neighbor(self, direction: str) -> Self:
+        """"Returns a neighbor.
 
         Args:
-            neighbor: The neighbor to move to, starting from 0 as right neighbor
-            and increasing counterclockwise to 5.
+            direction: Compass direction, one of [e, ne, nw, w, sw, se]
         """
         return type(self).from_cube(
-            Cube.from_oddr(self).moved(neighbor)
+            Cube.from_oddr(self).get_neighbor(direction)
         )
 
-    def rotated(self, center: Self, degree: int = 60) -> Self:
-        """Returns a clockwise-rotated copy of this object.
+    def get_rotation(self, center: Self, degree: int = -60) -> Self:
+        """Returns a rotated copy of this object.
 
         Args:
             center: The center to rotate around.
-            degree: The degree of rotation. Must be a positive multiple of 60.
+            degree: The degree of rotation. Default is one rotation clockwise.
         """
         center_cube = Cube.from_oddr(center)
         vector_cube = Cube.from_oddr(self) - center_cube
-        rotated_cube = vector_cube.rotated(degree) + center_cube
+        rotated_cube = vector_cube.get_rotation(degree) + center_cube
         return type(self).from_cube(rotated_cube)

@@ -31,7 +31,7 @@ class Shape:
     def _normalized(self, tiles: tuple[Tile]) -> tuple[Tile]:
         row_off = min(tile.row for tile in tiles)
         if row_off % 2 != 0:
-            tiles = tuple(tile.moved(2) for tile in tiles)
+            tiles = tuple(tile.get_neighbor("nw") for tile in tiles)
             row_off = row_off - 1
         col_off = min([tile.col for tile in tiles])
         if col_off == 0 and row_off == 0:
@@ -49,12 +49,12 @@ class Shape:
             matrix[tile.row][tile.col] = True
         return matrix
 
-    def rotated(self, center: Tile, degree: int = 60) -> Self:
-        """Returns a clockwise-rotated copy of this object.
+    def get_rotation(self, center: Tile, degree: int = -60) -> Self:
+        """Returns a rotated copy of this object.
 
         Args:
             center: The center to rotate around.
-            degree: The degree of rotation. Must be a positive multiple of 60.
+            degree: The degree of rotation. Default is one rotation clockwise.
         """
-        tiles = tuple(tile.rotated(center, degree) for tile in self.tiles)
+        tiles = tuple(tile.get_rotation(center, degree) for tile in self.tiles)
         return type(self)(self.id, tiles)

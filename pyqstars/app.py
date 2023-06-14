@@ -26,7 +26,7 @@ def inspect(shapes: Iterable[Shape]) -> None:
 def main() -> None:
     center = Tile(0, 0)
     inspect(
-        shape.rotated(center, 60*i)
+        shape.get_rotation(center, -60*i)
         for shape in SHAPES.values()
         for i in range(6)
     )
