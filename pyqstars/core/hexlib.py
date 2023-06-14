@@ -24,7 +24,7 @@ class Cube():
 
     @classmethod
     def get_direction_vectors(cls) -> dict[str, Self]:
-        """Precomputed permutations for neighbors."""
+        """Precomputed permutations for neighbors, direction to vector."""
         return {
             "e": cls(+1, 0, -1),
             "ne": cls(+1, -1, 0),
