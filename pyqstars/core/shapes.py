@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Self
 
-from pyqstars.core.hexagons import OddRowedOffsetCoordinate as Tile
+from pyqstars.core.hexagons import OddRowedOffset as Tile
 
 
 @dataclass(frozen=True, init=False)
@@ -29,27 +29,16 @@ class Shape:
         return "\n".join(lines)
 
     def _normalized(self, tiles: tuple[Tile]) -> tuple[Tile]:
-        tiles = self._moved_to_lowest_row(tiles)
-        tiles = self._moved_to_column_0(tiles)
-        return tiles
-
-    def _moved_to_lowest_row(self, tiles: tuple[Tile]) -> tuple[Tile]:
         row_off = min(tile.r for tile in tiles)
         if row_off % 2 != 0:
             tiles = tuple(tile.moved(2) for tile in tiles)
             row_off = row_off - 1
-        if row_off == 0:
-            return tiles
-        for tile in tiles:
-            tile.r = tile.r - row_off
-        return tiles
-
-    def _moved_to_column_0(self, tiles: tuple[Tile]) -> tuple[Tile]:
         col_off = min([tile.q for tile in tiles])
-        if col_off == 0:
+        if col_off == 0 and row_off == 0:
             return tiles
         for tile in tiles:
             tile.q = tile.q - col_off
+            tile.r = tile.r - row_off
         return tiles
 
     def get_matrix(self) -> list[list[bool]]:

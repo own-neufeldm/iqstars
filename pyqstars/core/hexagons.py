@@ -5,7 +5,7 @@ from typing import Self, Type
 
 
 @dataclass(order=True)
-class _CubeCoordinate():
+class Cube():
     """Cube coordinate for performing complex operations in a hexagonal grid."""
     q: int
     r: int
@@ -20,7 +20,7 @@ class _CubeCoordinate():
         )
 
     @classmethod
-    def from_oddr(cls, offset: Type["OddRowedOffsetCoordinate"]) -> Self:
+    def from_oddr(cls, offset: Type["OddRowedOffset"]) -> Self:
         """Constructs from an odd-rowed offset coordinate."""
         q = offset.q - (offset.r - (abs(offset.r) % 2)) // 2
         r = offset.r
@@ -67,13 +67,13 @@ class _CubeCoordinate():
 
 
 @dataclass(order=True)
-class OddRowedOffsetCoordinate():
+class OddRowedOffset():
     """Coordinate in an odd-rowed offset system."""
     q: int
     r: int
 
     @classmethod
-    def from_cube(cls, cube: Type["_CubeCoordinate"]) -> Self:
+    def from_cube(cls, cube: Type["Cube"]) -> Self:
         """Constructs from a cube coordinate."""
         col = cube.q + (cube.r - (abs(cube.r) % 2)) // 2
         row = cube.r
@@ -87,7 +87,7 @@ class OddRowedOffsetCoordinate():
             and increasing counterclockwise to 5.
         """
         return type(self).from_cube(
-            _CubeCoordinate.from_oddr(self).moved(neighbor)
+            Cube.from_oddr(self).moved(neighbor)
         )
 
     def rotated(self, center: Self, degree: int = 60) -> Self:
@@ -97,7 +97,7 @@ class OddRowedOffsetCoordinate():
             center: The center to rotate around.
             degree: The degree of rotation. Must be a positive multiple of 60.
         """
-        center_cube = _CubeCoordinate.from_oddr(center)
-        vector_cube = _CubeCoordinate.from_oddr(self) - center_cube
+        center_cube = Cube.from_oddr(center)
+        vector_cube = Cube.from_oddr(self) - center_cube
         rotated_cube = vector_cube.rotated(degree) + center_cube
         return type(self).from_cube(rotated_cube)
