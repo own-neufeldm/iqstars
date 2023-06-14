@@ -16,16 +16,13 @@ class Shape:
         return None
 
     def __str__(self) -> str:
-        unoccupied, occupied = "-", "*"
+        unoccupied, occupied = "-", self.id
         lines: list[str] = []
         for row_i, row in enumerate(self.get_matrix()):
-            line: list[str] = []
+            line: list[str] = [""] if row_i % 2 == 1 else []
             for col in row:
                 line.append(occupied if col else unoccupied)
-            string = " ".join(line)
-            if row_i % 2 == 1:
-                string = " " + string
-            lines.append(string)
+            lines.append(" ".join(line))
         return "\n".join(lines)
 
     def _normalized(self, tiles: tuple[Tile]) -> tuple[Tile]:

@@ -4,7 +4,7 @@ from pyqstars.core.shapes import Shape, Tile
 
 SHAPES = {
     "blue": Shape("b", (Tile(0, 0), Tile(1, 0), Tile(2, 0), Tile(1, 1))),
-    "green": Shape("x", (Tile(0, 0), Tile(1, 0), Tile(1, 1), Tile(2, 2))),
+    "green": Shape("g", (Tile(0, 0), Tile(1, 0), Tile(1, 1), Tile(2, 2))),
     "orange": Shape("o", (Tile(0, 0), Tile(1, 0), Tile(1, 1))),
     "pink": Shape("p", (Tile(0, 0), Tile(1, 0), Tile(1, 1), Tile(1, 2))),
     "red": Shape("r", (Tile(0, 0), Tile(1, 0), Tile(0, 1), Tile(1, 1))),
