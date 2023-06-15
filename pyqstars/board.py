@@ -1,4 +1,4 @@
-from pyqstars.core.shapes import Shape
+from pyqstars.shapes import Shape
 
 
 FIELD_EMPTY = " "

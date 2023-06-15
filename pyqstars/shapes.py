@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Self
 
-from pyqstars.core.hexlib import OddRowedOffset as Tile
+from pyqstars.hexlib import OddRowedOffset as Tile
 
 
 @dataclass(frozen=True, init=False)

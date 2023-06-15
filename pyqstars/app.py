@@ -1,6 +1,6 @@
 from typing import Iterable
 
-from pyqstars.core.shapes import Shape, Tile
+from pyqstars.shapes import Shape, Tile
 
 SHAPES = {
     "blue": Shape("b", (Tile(0, 0), Tile(1, 0), Tile(2, 0), Tile(1, 1))),

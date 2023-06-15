@@ -31,18 +31,6 @@ class Cube():
         return type(self)(self.q - other.q, self.r - other.r)
 
     @classmethod
-    def get_direction_vectors(cls) -> dict[str, Self]:
-        """Precomputed permutations for neighbors, direction to vector."""
-        return {
-            "e": cls(+1, 0, -1),
-            "ne": cls(+1, -1, 0),
-            "nw": cls(0, -1, +1),
-            "w": cls(-1, 0, +1),
-            "sw": cls(-1, +1, 0),
-            "se": cls(0, +1, -1)
-        }
-
-    @classmethod
     def from_oddr(cls, offset: Type["OddRowedOffset"]) -> Self:
         """Constructs from an odd-rowed offset coordinate."""
         q = offset.col - (offset.row - (offset.row % 2)) // 2
@@ -55,7 +43,7 @@ class Cube():
         Args:
             direction: Compass direction, one of [e, ne, nw, w, sw, se]
         """
-        return self + type(self).get_direction_vectors()[direction]
+        return self + CUBE_DIRECTION_VECTORS[direction]
 
     def get_rotation(self, degree: int = -60) -> Self:
         """Returns a rotated copy of this object.
@@ -112,3 +100,13 @@ class OddRowedOffset():
         vector_cube = Cube.from_oddr(self) - center_cube  # type: ignore
         rotated_cube = vector_cube.get_rotation(degree) + center_cube
         return type(self).from_cube(rotated_cube)  # type: ignore
+
+
+CUBE_DIRECTION_VECTORS = {
+    "e": Cube(+1, 0, -1),
+    "ne": Cube(+1, -1, 0),
+    "nw": Cube(0, -1, +1),
+    "w": Cube(-1, 0, +1),
+    "sw": Cube(-1, +1, 0),
+    "se": Cube(0, +1, -1)
+}
