@@ -4,12 +4,20 @@ from dataclasses import dataclass
 from typing import Self, Type
 
 
-@dataclass(frozen=True, order=True)
+@dataclass(frozen=True, init=False)
 class Cube():
     """Cube coordinate for performing complex operations in a hexagonal grid."""
     q: int
     r: int
-    s: int = None
+    s: int
+
+    def __init__(self, q: int, r: int, s: int | None = None) -> None:
+        if s is None:
+            s = -q-r
+        object.__setattr__(self, "q", q)
+        object.__setattr__(self, "r", r)
+        object.__setattr__(self, "s", s)
+        return None
 
     def __post_init__(self) -> None:
         if self.s is None:
@@ -37,7 +45,7 @@ class Cube():
     @classmethod
     def from_oddr(cls, offset: Type["OddRowedOffset"]) -> Self:
         """Constructs from an odd-rowed offset coordinate."""
-        q = offset.col - (offset.row - (abs(offset.row) % 2)) // 2
+        q = offset.col - (offset.row - (offset.row % 2)) // 2
         r = offset.row
         return cls(q, r)
 
@@ -70,7 +78,7 @@ class Cube():
         return type(self)(q, r)
 
 
-@dataclass(order=True)
+@dataclass(frozen=True)
 class OddRowedOffset():
     """Coordinate in an odd-rowed offset system."""
     col: int
@@ -79,7 +87,7 @@ class OddRowedOffset():
     @classmethod
     def from_cube(cls, cube: Type["Cube"]) -> Self:
         """Constructs from a cube coordinate."""
-        col = cube.q + (cube.r - (abs(cube.r) % 2)) // 2
+        col = cube.q + (cube.r - (cube.r % 2)) // 2
         row = cube.r
         return cls(col, row)
 
@@ -90,7 +98,7 @@ class OddRowedOffset():
             direction: Compass direction, one of [e, ne, nw, w, sw, se]
         """
         return type(self).from_cube(
-            Cube.from_oddr(self).get_neighbor(direction)
+            Cube.from_oddr(self).get_neighbor(direction)  # type: ignore
         )
 
     def get_rotation(self, center: Self, degree: int = -60) -> Self:
@@ -100,7 +108,7 @@ class OddRowedOffset():
             center: The center to rotate around.
             degree: The degree of rotation. Default is one rotation clockwise.
         """
-        center_cube = Cube.from_oddr(center)
-        vector_cube = Cube.from_oddr(self) - center_cube
+        center_cube = Cube.from_oddr(center)  # type: ignore
+        vector_cube = Cube.from_oddr(self) - center_cube  # type: ignore
         rotated_cube = vector_cube.get_rotation(degree) + center_cube
-        return type(self).from_cube(rotated_cube)
+        return type(self).from_cube(rotated_cube)  # type: ignore
