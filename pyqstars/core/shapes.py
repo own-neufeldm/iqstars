@@ -47,24 +47,16 @@ class Shape:
 
 
 def _normalized(tiles: tuple[Tile]) -> tuple[Tile]:
-    # move to smallest possible row >= 0
-    if min(t.row for t in tiles) < 0:
-        while min(t.row for t in tiles) < 0:
-            tiles = tuple(t.get_neighbor("se") for t in tiles)
-    else:
-        while min(t.row for t in tiles) > 0:
-            tiles = tuple(t.get_neighbor("nw") for t in tiles)
-    # move to col 0
+    while min(t.row for t in tiles) < 0:
+        tiles = tuple(t.get_neighbor("se") for t in tiles)
+    while min(t.row for t in tiles) > 0:
+        tiles = tuple(t.get_neighbor("nw") for t in tiles)
     while min(t.col for t in tiles) < 0:
         tiles = tuple(t.get_neighbor("e") for t in tiles)
     while min(t.col for t in tiles) > 0:
         tiles = tuple(t.get_neighbor("w") for t in tiles)
-    # # adjust to even row
-    # in_even_row = False
-    # for tile in (t for t in tiles if t.col == 0):
-    #     if tile.row % 2 == 0:
-    #         in_even_row = True
-    #         break
-    # if not in_even_row:
-    #     tiles = tuple(t.get_neighbor("sw") for t in tiles)
+    assert (
+        min(t.col for t in tiles) == 0
+        and min(t.row for t in tiles) == 0
+    ), f"Tiles not normalized, minimum col and/or row not 0 in: {tiles}"
     return tiles
