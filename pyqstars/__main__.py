@@ -4,7 +4,11 @@ import pyqstars.app
 
 
 def configure_logging(level: int) -> None:
-    logging.basicConfig(level=level, format="[%(levelname)s] %(message)s")
+    logging.basicConfig(
+        level=level,
+        format="[%(levelname)s] [%(asctime)s] %(message)s",
+        datefmt="%H:%M:%S"
+    )
     return None 
 
 
