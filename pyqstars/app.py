@@ -31,8 +31,7 @@ def solve(board: Board, pieces: list[Piece]) -> list[Board]:
     for row_i, row in enumerate(board.matrix):
         for col_i, _ in enumerate(row):
             for piece in pieces:
-                for i in range(6):
-                    rotation = piece.get_rotation(-60*i)
+                for rotation in piece.get_unique_rotations():
                     if board.has_place_at(rotation, row_i, col_i):
                         new_board = copy.deepcopy(board)
                         new_board.place(rotation, row_i, col_i)
@@ -43,19 +42,23 @@ def solve(board: Board, pieces: list[Piece]) -> list[Board]:
 
 
 def main() -> None:
+    from timeit import default_timer as timer
     board = Board([
-        ["g", "y", "y", "y", "r", "r", "-"],
-        ["g", "y", "b", "r", "r", "-", "/"],
-        ["-", "g", "g", "b", "p", "-", "p"],
-        ["-", "-", "b", "b", "p", "p", "/"]
+        ["g", "y", "y", "y", "-", "-", "-"],
+        ["g", "y", "-", "-", "-", "-", "/"],
+        ["-", "g", "g", "-", "-", "-", "-"],
+        ["-", "-", "-", "-", "-", "-", "/"]
     ])
-    # board = Board([
-    #     ["-", "-", "-", "-", "-", "-", "-"],
-    #     ["-", "-", "-", "-", "-", "-", "/"],
-    #     ["-", "-", "-", "-", "-", "-", "-"],
-    #     ["-", "-", "-", "-", "-", "-", "/"]
-    # ])
+    pieces = [
+        PIECES["blue"],
+        PIECES["orange"],
+        PIECES["pink"],
+        PIECES["red"],
+        PIECES["violet"]
+    ]
     print("Finding solutions ...")
-    solutions = solve(board, [PIECES["orange"], PIECES["violet"]])
-    # solutions = solve(board, list(PIECES.values()))
-    print(f"Result: found {len(solutions)} solutions!")
+    start = timer()
+    solutions = solve(board, pieces)
+    end = timer()
+    print(f"Result: found {len(solutions)} solutions in {end-start:.2f}s!")
+    return None

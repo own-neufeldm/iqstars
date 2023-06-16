@@ -72,11 +72,40 @@ class Piece:
             ]
         )
 
+    def get_unique_rotations(self) -> list[Self]:
+        """Returns a list of unique rotations for this object."""
+        unique_rotations: list[Self] = []
+        for rotation in [self.get_rotation(-60*i) for i in range(6)]:
+            if not unique_rotations:
+                unique_rotations.append(rotation)
+            else:
+                is_duplicate = any(
+                    all(
+                        tile in unique_rotation.tiles
+                        for tile in rotation.tiles
+                    )
+                    for unique_rotation in unique_rotations
+                )
+                if not is_duplicate:
+                    unique_rotations.append(rotation)
+        return unique_rotations
 
-@dataclass(frozen=True)
+
+@dataclass(frozen=True, init=False)
 class Board:
     """Game board."""
     matrix: list[list[str]]
+
+    def __init__(self, matrix: list[list[str]] | None = None) -> None:
+        if matrix is None:
+            matrix = [
+                [UNOCCUPIED for _ in range(SIZE_COL)]
+                if i % 2 == 0 else
+                [UNOCCUPIED for _ in range(SIZE_COL-1)] + [UNAVAILABLE]
+                for i in range(SIZE_ROW)
+            ]
+        object.__setattr__(self, "matrix",  matrix)
+        return None
 
     def __str__(self) -> str:
         unavailable = UNAVAILABLE
