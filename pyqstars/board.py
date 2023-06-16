@@ -1,66 +1,67 @@
-from pyqstars.shapes import Shape
+from dataclasses import dataclass
+from typing import Self
+
+from pyqstars.hexlib import OddRowedOffset as Tile
+
+SIZE_COL = 7
+SIZE_ROW = 4
 
 
-FIELD_EMPTY = " "
-FIELD_UNAVAILABLE = "/"
-CHAR_TO_FIELD = {
-    "-": FIELD_EMPTY,
-    " ": FIELD_UNAVAILABLE
-}
+@dataclass(frozen=True, init=False)
+class Piece:
+    """Puzzle piece."""
+    id: str
+    tiles: list[Tile]
+
+    def __init__(self, id: str, tiles: list[Tile]) -> None:
+        object.__setattr__(self, "id", id)
+        object.__setattr__(self, "tiles", self._normalized(tiles))
+        return None
+
+    def __str__(self) -> str:
+        unoccupied, occupied = "-", self.id
+        lines: list[str] = []
+        for row_i, row in enumerate(self.get_matrix()):
+            line: list[str] = [""] if row_i % 2 != 0 else []
+            for col in row:
+                line.append(occupied if col else unoccupied)
+            lines.append(" ".join(line))
+        return "\n".join(lines)
+
+    def _normalized(self, tiles: list[Tile]) -> list[Tile]:
+        """Shifts all tiles to the smallest positive position possible."""
+        while min(t.row for t in tiles) < 0:
+            tiles = [t.get_neighbor("se") for t in tiles]
+        while min(t.row for t in tiles) > 0:
+            tiles = [t.get_neighbor("nw") for t in tiles]
+        while min(t.col for t in tiles) < 0:
+            tiles = [t.get_neighbor("e") for t in tiles]
+        while min(t.col for t in tiles) > 0:
+            tiles = [t.get_neighbor("w") for t in tiles]
+        return tiles
+
+    def get_matrix(self) -> list[list[bool]]:
+        """Returns a 2D mapping of the tiles, True if occupied."""
+        size = min(SIZE_COL, SIZE_ROW)
+        matrix = [[False for _ in range(size)] for _ in range(size)]
+        for tile in self.tiles:
+            matrix[tile.row][tile.col] = True
+        return matrix
+
+    def get_rotation(self, center: Tile, degree: int = -60) -> Self:
+        """Returns a rotated copy of this object.
+
+        Args:
+            center: The center to rotate around.
+            degree: The degree of rotation. Default is one rotation clockwise.
+        """
+        return type(self)(
+            self.id,
+            [tile.get_rotation(center, degree) for tile in self.tiles]
+        )
 
 
-def from_string(string: str) -> list[list[str]]:
-    ...
-
-
-def dump(board: list[list[str]]) -> None:
-    field_to_char = {v: k for k, v in CHAR_TO_FIELD.items()}
-    lines: list[str] = []
-    for row in board:
-        line: list[str] = []
-        for field in row:
-            try:
-                line.append(field_to_char[field])
-            except KeyError:
-                line.append(field)
-        if string := "".join(line).rstrip():
-            lines.append(string)
-    print("\n".join(lines))
-
-
-def can_tile_be_placed_at(board: list[list[str]], row: int, col: int) -> bool:
-    return board[row][col] == FIELD_EMPTY
-
-
-def place_tile_at(board: list[list[str]], tile: str, row: int, col: int) -> bool:
-    if not can_tile_be_placed_at(board, row, col):
-        return False
-    board[row][col] = tile
-    return True
-
-
-def place_piece_at(board: list[list[str]], piece: Shape, row: int, col: int) -> bool:
-    for tile_row, tile_col in piece.itertiles():
-        if not place_tile_at(board, piece.id, tile_row+row, tile_col+col):
-            return False
-    return True
-
-
-def place_piece(board: list[list[str]], piece: Shape) -> bool:
-    for rotation in range(6):
-        for row in range(len(board)):
-            for col in range(len(board[row])):
-                if place_piece_at(board, piece.get_rotation(rotation), row, col):
-                    return True
-    return False
-
-
-def solve(board: list[list[str]], pieces: list[Shape]) -> bool:
-    if not pieces:
-        dump(board)
-        return True
-    for piece in pieces:
-        if place_piece(board, piece):
-            pieces.remove(piece)
-            solve(board, pieces)
-    return False
+@dataclass(frozen=True)
+class Board:
+    """Game board."""
+    matrix: list[list[str]]

@@ -1,12 +1,22 @@
-# https://www.redblobgames.com/grids/hexagons/
+# Reference: https://www.redblobgames.com/grids/hexagons/
 
 from dataclasses import dataclass
-from typing import Self, Type
+from typing import Self
 
 
 @dataclass(frozen=True, init=False)
 class Cube():
-    """Cube coordinate for performing complex operations in a hexagonal grid."""
+    """Cube coordinate.
+
+    All operations within this library are effectively done via this class."""
+    _DIRECTION_VECTORS = {
+        "e": (+1, 0, -1),
+        "ne": (+1, -1, 0),
+        "nw": (0, -1, +1),
+        "w": (-1, 0, +1),
+        "sw": (-1, +1, 0),
+        "se": (0, +1, -1)
+    }
     q: int
     r: int
     s: int
@@ -31,7 +41,7 @@ class Cube():
         return type(self)(self.q - other.q, self.r - other.r)
 
     @classmethod
-    def from_oddr(cls, offset: Type["OddRowedOffset"]) -> Self:
+    def from_oddr(cls, offset: "OddRowedOffset") -> Self:
         """Constructs from an odd-rowed offset coordinate."""
         q = offset.col - (offset.row - (offset.row % 2)) // 2
         r = offset.row
@@ -43,18 +53,9 @@ class Cube():
         Args:
             direction: Compass direction, one of [e, ne, nw, w, sw, se]
         """
-        return self + CUBE_DIRECTION_VECTORS[direction]
+        return self + Cube(*Cube._DIRECTION_VECTORS[direction])
 
-    def get_rotation(self, degree: int = -60) -> Self:
-        """Returns a rotated copy of this object.
-
-        Args:
-            degree: The degree of rotation. Default is one rotation clockwise.
-        """
-        if degree % 60 != 0:
-            raise ValueError(f"degree ({degree}) must be a multiple of 60.")
-        if degree == 0:
-            return type(self)(self.q, self.r)
+    def _get_rotation(self, degree: int) -> Self:
         q, r, s = self.q, self.r, self.s
         times = degree // 60
         if times < 0:
@@ -65,15 +66,41 @@ class Cube():
                 q, r, s = -s, -q, -r
         return type(self)(q, r)
 
+    def get_rotation(self, center: Self, degree: int = -60) -> Self:
+        """Returns a rotated copy of this object.
+
+        Args:
+            center: The center to rotate around.
+            degree: The degree of rotation. Default is one rotation clockwise.
+        """
+        if degree % 60 != 0:
+            raise ValueError(f"degree ({degree}) must be a multiple of 60.")
+        if degree == 0:
+            return type(self)(self.q, self.r)
+        vector = self - center
+        return vector._get_rotation(degree)
+
 
 @dataclass(frozen=True)
 class OddRowedOffset():
-    """Coordinate in an odd-rowed offset system."""
+    """Odd-rowed offset coordinate.
+
+    Serves as simplified API for performing operations in a hexagonal grid."""
     col: int
     row: int
 
+    def __add__(self, other: Self) -> Self:
+        return type(self).from_cube(
+            Cube.from_oddr(self) + Cube.from_oddr(other)
+        )
+
+    def __sub__(self, other: Self) -> Self:
+        return type(self).from_cube(
+            Cube.from_oddr(self) - Cube.from_oddr(other)
+        )
+
     @classmethod
-    def from_cube(cls, cube: Type["Cube"]) -> Self:
+    def from_cube(cls, cube: "Cube") -> Self:
         """Constructs from a cube coordinate."""
         col = cube.q + (cube.r - (cube.r % 2)) // 2
         row = cube.r
@@ -86,7 +113,7 @@ class OddRowedOffset():
             direction: Compass direction, one of [e, ne, nw, w, sw, se]
         """
         return type(self).from_cube(
-            Cube.from_oddr(self).get_neighbor(direction)  # type: ignore
+            Cube.from_oddr(self).get_neighbor(direction)
         )
 
     def get_rotation(self, center: Self, degree: int = -60) -> Self:
@@ -96,17 +123,8 @@ class OddRowedOffset():
             center: The center to rotate around.
             degree: The degree of rotation. Default is one rotation clockwise.
         """
-        center_cube = Cube.from_oddr(center)  # type: ignore
-        vector_cube = Cube.from_oddr(self) - center_cube  # type: ignore
-        rotated_cube = vector_cube.get_rotation(degree) + center_cube
-        return type(self).from_cube(rotated_cube)  # type: ignore
-
-
-CUBE_DIRECTION_VECTORS = {
-    "e": Cube(+1, 0, -1),
-    "ne": Cube(+1, -1, 0),
-    "nw": Cube(0, -1, +1),
-    "w": Cube(-1, 0, +1),
-    "sw": Cube(-1, +1, 0),
-    "se": Cube(0, +1, -1)
-}
+        return type(self).from_cube(
+            Cube.from_oddr(self).get_rotation(
+                Cube.from_oddr(center), degree
+            )
+        )
