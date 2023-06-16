@@ -13,7 +13,7 @@ def configure_logging(level: int) -> None:
 
 
 def main() -> None:
-    configure_logging(logging.DEBUG)
+    configure_logging(logging.INFO)
     pyqstars.app.main()
     return None
 
