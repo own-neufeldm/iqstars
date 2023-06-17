@@ -50,7 +50,7 @@ def unique(boards: list[Board]) -> list[Board]:
     return unique_boards
 
 
-def solve(board: Board, pieces: list[Piece]) -> list[Board]:
+def _solve(board: Board, pieces: list[Piece]) -> list[Board]:
     """Returns all possible combinations.
 
     Args:
@@ -64,32 +64,24 @@ def solve(board: Board, pieces: list[Piece]) -> list[Board]:
         for row, col in Board.get_fields():
             if (new_board := board.place(piece, row, col)) is not None:
                 new_pieces = [p for p in pieces if p.id != piece.id]
-                solutions += solve(new_board, new_pieces)
+                solutions += _solve(new_board, new_pieces)
     return solutions
 
 
-def main() -> None:
-    board = Board([
-        ["-", "-", "-", "v", "v", "v", "o"],
-        ["-", "-", "-", "-", "-", "o", "/"],
-        ["-", "-", "-", "-", "-", "-", "o"],
-        ["-", "-", "-", "-", "-", "-", "/"]
-    ])
-    pieces = [
-        PIECES["blue"],
-        PIECES["green"],
-        PIECES["pink"],
-        PIECES["red"],
-        PIECES["yellow"]
-    ]
-    pieces = [r for p in pieces for r in p.get_unique_rotations()]
-    print(f"[{datetime.now().strftime('%H:%M:%S')}] Finding solutions ...")
+def solve(board: Board, pieces: list[Piece]) -> None:
+    print(
+        f"[{datetime.now().strftime('%H:%M:%S')}] Finding solutions for:",
+        "",
+        board,
+        "",
+        sep="\n"
+    )
     start = timer()
-    combinations = solve(board, pieces)
+    combinations = _solve(board, pieces)
     solutions = unique(combinations)
     print(
         f"[{datetime.now().strftime('%H:%M:%S')}] Result:",
-        f"  run time       : {timer()-start}"
+        f"  run time       : {timer()-start:.3f}s",
         f"  combination(s) : {len(combinations)}",
         f"  solutions(s)   : {len(solutions)}",
         sep="\n"

@@ -1,20 +1,21 @@
-import logging
-
-import pyqstars.app
-
-
-def configure_logging(level: int) -> None:
-    logging.basicConfig(
-        level=level,
-        format="[%(levelname)s] [%(asctime)s] %(message)s",
-        datefmt="%H:%M:%S"
-    )
-    return None
+import pyqstars.app as app
 
 
 def main() -> None:
-    configure_logging(logging.DEBUG)
-    pyqstars.app.main()
+    board = app.Board([
+        ["-", "-", "-", "v", "v", "v", "o"],
+        ["-", "-", "-", "-", "-", "o", "/"],
+        ["p", "-", "p", "-", "-", "-", "o"],
+        ["p", "p", "-", "-", "-", "-", "/"]
+    ])
+    pieces = [
+        app.PIECES["blue"],
+        app.PIECES["green"],
+        app.PIECES["red"],
+        app.PIECES["yellow"]
+    ]
+    pieces = [r for p in pieces for r in p.get_unique_rotations()]
+    app.solve(board, pieces)
     return None
 
 
