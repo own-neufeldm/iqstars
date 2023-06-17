@@ -14,4 +14,4 @@ Follow these steps to install the app:
 Follow these steps to run the app:
 
 1. Modify `board` and `pieces` in `./pyqstars/__main__.py`
-2. Run `python -m pyqstars`
+2. Run `pyqstars`

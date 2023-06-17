@@ -18,3 +18,6 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/shyguys/pyqstars"
 "Bug Tracker" = "https://github.com/shyguys/pyqstars/issues"
+
+[project.scripts]
+pyqstars = "pyqstars.__main__:main"
