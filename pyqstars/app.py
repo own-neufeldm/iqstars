@@ -15,7 +15,7 @@ PIECES = {
 }
 
 
-def inspect(objs: Iterable[object]) -> None:
+def _inspect(objs: Iterable[object]) -> None:
     """Prints a pretty overview of the given Iterable."""
     separator = "\n\n# ---------------------------------------------- #\n\n"
     print(
@@ -27,7 +27,7 @@ def inspect(objs: Iterable[object]) -> None:
     return None
 
 
-def unique(boards: list[Board]) -> list[Board]:
+def _unique(boards: list[Board]) -> list[Board]:
     """Returns unique combinations.
 
     Args:
@@ -69,6 +69,7 @@ def _solve(board: Board, pieces: list[Piece]) -> list[Board]:
 
 
 def solve(board: Board, pieces: list[Piece]) -> None:
+    """Solves the given board by inserting the given pieces."""
     print(
         f"[{datetime.now().strftime('%H:%M:%S')}] Finding solutions for:",
         "",
@@ -78,7 +79,7 @@ def solve(board: Board, pieces: list[Piece]) -> None:
     )
     start = timer()
     combinations = _solve(board, pieces)
-    solutions = unique(combinations)
+    solutions = _unique(combinations)
     print(
         f"[{datetime.now().strftime('%H:%M:%S')}] Result:",
         f"  run time       : {timer()-start:.3f}s",
@@ -86,5 +87,5 @@ def solve(board: Board, pieces: list[Piece]) -> None:
         f"  solutions(s)   : {len(solutions)}",
         sep="\n"
     )
-    inspect(solutions)
+    _inspect(solutions)
     return None

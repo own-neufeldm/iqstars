@@ -32,7 +32,7 @@ class Piece:
         return "\n".join(lines)
 
     def _normalized(self, tiles: list[Tile]) -> list[Tile]:
-        """Shifts all tiles to the smallest positive position possible."""
+        """Returns tiles shifted to the smallest positive position possible."""
         while min(t.row for t in tiles) < 0:
             tiles = [t.get_neighbor("se") for t in tiles]
         while min(t.row for t in tiles) > 0:
