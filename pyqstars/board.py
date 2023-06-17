@@ -1,6 +1,7 @@
-import logging
+import copy
+import itertools
 from dataclasses import dataclass
-from typing import Self
+from typing import Iterable, Self
 
 from pyqstars.hexlib import OddRowedOffset as Tile
 
@@ -78,16 +79,16 @@ class Piece:
         for rotation in [self.get_rotation(-60*i) for i in range(6)]:
             if not unique_rotations:
                 unique_rotations.append(rotation)
-            else:
-                is_duplicate = any(
-                    all(
-                        tile in unique_rotation.tiles
-                        for tile in rotation.tiles
-                    )
-                    for unique_rotation in unique_rotations
+                continue
+            is_unique = all(
+                any(
+                    tile not in unique_rotation.tiles
+                    for tile in rotation.tiles
                 )
-                if not is_duplicate:
-                    unique_rotations.append(rotation)
+                for unique_rotation in unique_rotations
+            )
+            if is_unique:
+                unique_rotations.append(rotation)
         return unique_rotations
 
 
@@ -104,6 +105,14 @@ class Board:
                 [UNOCCUPIED for _ in range(SIZE_COL-1)] + [UNAVAILABLE]
                 for i in range(SIZE_ROW)
             ]
+        elif any(
+            len(matrix) != SIZE_ROW or
+            len(row) != SIZE_COL for row in matrix
+        ):
+            raise ValueError(
+                f"Matrix does not meet size requirements. "
+                f"Must have {SIZE_ROW} rows with {SIZE_COL} each."
+            )
         object.__setattr__(self, "matrix",  matrix)
         return None
 
@@ -116,43 +125,27 @@ class Board:
             lines.append(" ".join(line))
         return ("\n".join(lines))
 
-    def has_place_at(self, piece: Piece, row: int, col: int) -> bool:
-        """Checks if the given piece fits at the given position."""
-        target = Tile(col, row)
-        for tile in piece.tiles:
-            vector = piece.get_vector(tile, target)
-            logging.debug(
-                f"Checking if board has place:\n"
-                f"  piece  : {piece!r}\n\n{piece!s}\n\n"
-                f"  tile   : {tile}\n"
-                f"  target : {target}\n"
-                f"  vector : {vector}\n"
-                f"  board  : <see below>\n\n{self}\n"
-            )
-            # input("\nPress Return to continue ...\n")
-            if vector.col < 0 or vector.row < 0:
-                logging.debug("Vector col and/or row < 0, aborting!")
-                # input("\nPress Return to continue ...\n")
-                return False
-            try:
-                has_place = self.matrix[vector.row][vector.col] == UNOCCUPIED
-            except IndexError:
-                logging.debug("IndexError, aborting!")
-                # input("\nPress Return to continue ...\n")
-                return False
-            else:
-                if not has_place:
-                    logging.debug("Place already occupied, aborting!")
-                    # input("\nPress Return to continue ...\n")
-                    return False
-        logging.debug("Place unoccupied!")
-        # input("\nPress Return to continue ...\n")
-        return True
+    @classmethod
+    def get_fields(cls) -> Iterable[tuple[int, int]]:
+        """Returns an iterable of (row, col) indices for fields of any Board."""
+        return itertools.product(range(SIZE_ROW), range(SIZE_COL))
 
-    def place(self, piece: Piece, row: int, col: int) -> None:
-        """Places the given piece at the given location."""
+    def place(self, piece: Piece, row: int, col: int) -> Self | None:
+        """Returns a copy of this object with the given piece placed.
+
+        If the piece cannot be placed, None will be returned."""
+        new_board = copy.deepcopy(self)
         target = Tile(col, row)
         for tile in piece.tiles:
             vector = piece.get_vector(tile, target)
-            self.matrix[vector.row][vector.col] = piece.id
-        return None
+            is_out_of_range = (
+                vector.col < 0 or vector.col > SIZE_COL-1
+                or vector.row < 0 or vector.row > SIZE_ROW-1
+            )
+            if is_out_of_range:
+                return None
+            if new_board.matrix[vector.row][vector.col] == UNOCCUPIED:
+                new_board.matrix[vector.row][vector.col] = piece.id
+            else:
+                return None
+        return new_board

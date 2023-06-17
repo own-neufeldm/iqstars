@@ -9,11 +9,11 @@ def configure_logging(level: int) -> None:
         format="[%(levelname)s] [%(asctime)s] %(message)s",
         datefmt="%H:%M:%S"
     )
-    return None 
+    return None
 
 
 def main() -> None:
-    configure_logging(logging.INFO)
+    configure_logging(logging.DEBUG)
     pyqstars.app.main()
     return None
 
