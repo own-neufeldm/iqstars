@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyqstars"
-version = "0.0.1"
+version = "1.0.0"
 authors = [{ name = "Martin Neufeld" }]
 description = "This is a Python app to play IQ Stars."
 readme = "README.md"
