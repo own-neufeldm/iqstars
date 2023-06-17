@@ -89,9 +89,9 @@ def main() -> None:
     solutions = unique(combinations)
     print(
         f"[{datetime.now().strftime('%H:%M:%S')}] Result:",
-        f"  run time      : {timer()-start}"
-        f"  combination(s): {len(combinations)}",
-        f"  solutions(s)  : {len(solutions)}",
+        f"  run time       : {timer()-start}"
+        f"  combination(s) : {len(combinations)}",
+        f"  solutions(s)   : {len(solutions)}",
         sep="\n"
     )
     inspect(solutions)
