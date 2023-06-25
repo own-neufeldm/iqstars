@@ -5,19 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pyqstars"
 version = "1.0.0"
-authors = [{ name = "Martin Neufeld" }]
-description = "This is a Python app to play IQ Stars."
-readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
-  "Programming Language :: Python :: 3",
-  "License :: OSI Approved :: MIT License",
-  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3"
 ]
-
-[project.urls]
-"Homepage" = "https://github.com/shyguys/pyqstars"
-"Bug Tracker" = "https://github.com/shyguys/pyqstars/issues"
 
 [project.scripts]
 pyqstars = "pyqstars.__main__:main"
