@@ -1,4 +1,4 @@
-import pyqstars.app as app
+import iqstars.app as app
 
 
 def main() -> None:

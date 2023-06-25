@@ -3,7 +3,7 @@ import itertools
 from dataclasses import dataclass
 from typing import Iterable, Self
 
-from pyqstars.hexlib import OddRowedOffset as Tile
+from iqstars.hexlib import OddRowedOffset as Tile
 
 SIZE_COL = 7
 SIZE_ROW = 4

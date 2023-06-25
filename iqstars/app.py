@@ -2,7 +2,7 @@ from datetime import datetime
 from timeit import default_timer as timer
 from typing import Iterable
 
-from pyqstars.board import Board, Piece, Tile
+from iqstars.board import Board, Piece, Tile
 
 PIECES = {
     "blue": Piece("b", [Tile(0, 0), Tile(1, 0), Tile(2, 0), Tile(1, 1)]),

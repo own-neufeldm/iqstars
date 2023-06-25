@@ -1,4 +1,4 @@
-# pyqstars
+# iqstars
 
 This is a Python app to play IQ Stars.
 
@@ -13,5 +13,5 @@ Follow these steps to install the app:
 
 Follow these steps to run the app:
 
-1. Modify `board` and `pieces` in `./pyqstars/__main__.py`
-2. Run `pyqstars`
+1. Modify `board` and `pieces` in `./iqstars/__main__.py`
+2. Run `iqstars`
