@@ -5,7 +5,7 @@ build-backend = "poetry_dynamic_versioning.backend"
 [tool.poetry]
 name = "iqstars"
 version = "0.0.0"
-description = "App to play IQ Stars."
+description = "Python app for playing IQ Stars."
 authors = ["Martin Neufeld <m.neufeld946@gmail.com>"]
 license = "MIT"
 readme = "README.md"
