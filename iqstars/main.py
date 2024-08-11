@@ -14,7 +14,6 @@ def main() -> None:
         app.PIECES["red"],
         app.PIECES["yellow"]
     ]
-    pieces = [r for p in pieces for r in p.get_unique_rotations()]
     app.solve(board, pieces)
     return None
 

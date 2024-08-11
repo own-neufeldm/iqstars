@@ -70,6 +70,7 @@ def _solve(board: Board, pieces: list[Piece]) -> list[Board]:
 
 def solve(board: Board, pieces: list[Piece]) -> None:
     """Solves the given board by inserting the given pieces."""
+    pieces = [r for p in pieces for r in p.get_unique_rotations()]
     print(
         f"[{datetime.now().strftime('%H:%M:%S')}] Finding solutions for:",
         "",
