@@ -1,17 +1,32 @@
 # iqstars
 
-This is a Python app to play IQ Stars.
+Python app for playing [IQ Stars](https://www.smartgames.eu/uk/one-player-games/iq-stars).
 
-## Installation
+## Requirements
 
-Follow these steps to install the app:
+The following dependencies must already be installed on your system:
 
-1. Clone this repository and `cd` into it
-2. Install as a local package: `pip install -e .`
+| Dependency                                  | Version |
+| ------------------------------------------- | ------- |
+| [python](https://www.python.org/downloads/) | ^3.12   |
+| [pipx](https://pipx.pypa.io/stable/)        | ^1.6    |
+
+## Setup
+
+Install the app using `pipx`, e.g. directly from GitHub using SSH:
+
+```
+$ pipx install git+ssh://git@github.com/own-neufeldm/iqstars.git
+
+  installed package iqstars 1.0.0, installed using Python 3.12.5
+  These apps are now globally available
+    - iqstars.exe
+done! ✨ 🌟 ✨
+```
+
+You can now run the app using `iqstars`.
 
 ## Usage
 
-Follow these steps to run the app:
-
-1. Modify `board` and `pieces` in `./iqstars/__main__.py`
-2. Run `iqstars`
+Modify the board and pieces ([here](./iqstars/main.py)) for which the app should find solutions for.
+Then, run `iqstars`.
