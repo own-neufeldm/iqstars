@@ -1,6 +1,10 @@
-# ignore local python cache
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# python
 __pycache__
 
-# ignore local python package cache
-build
-*egg-info
+# editor
+.vscode
